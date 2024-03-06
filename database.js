@@ -32,10 +32,15 @@ const userProfileDetail = new mongoose.Schema(
      username:String,
      followers:[String],
      followings:[String],
-     posts:[{
-        data:Buffer,
-        contentType:String
-     }],
+     posts:[
+        {
+           name:String,
+           image:{
+                data:Buffer,
+                contentType:String
+           }
+        }
+       ],
      bio:String
     },{timestamps:true}
 )
