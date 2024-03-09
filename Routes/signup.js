@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {usermodel,userprofiledetailsmodel} = require("../database");
-
+const bcrypt = require("bcrypt");
 
 router.post('/createuser',async (req,res)=>{
 try{
@@ -13,9 +13,11 @@ try{
 
              const checkexistusername = await usermodel.findOne({username:username});
              if(checkexistusername==null){
-
-                const newuser = new usermodel({email,fullname,username,password})
-                const result = newuser.save();
+                const salt  = await bcrypt.genSalt(10);
+                const hashpassword = await bcrypt.hash(password,salt);
+                console.log(hashpassword +" new hashpassword");
+                const newuser = new usermodel({email,fullname,username,password:hashpassword})
+                const result =await newuser.save();
                 if(result!=null){
                     const activitydetails = new userprofiledetailsmodel({userid:newuser._id,username:username});
                     activitydetails.save();

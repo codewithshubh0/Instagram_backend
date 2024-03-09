@@ -82,21 +82,41 @@ router.post('/saveunfollowactivity',async (req,res)=>{
 
         router.post('/savepost',upload.single("image"),async (req,res)=>{
             try{
-                  const {userid} = req.body;
-            
-                   const updatebio = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
+                  const {userid,caption,likes,commentedby,comment} = req.body;
+              
+                   const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
                         posts:{
                             name:req.file.originalname,
                             image:{
                                 data:req.file.buffer,
                                 contentType:req.file.mimetype
-                            } 
+                            },
+                            postcaption:caption,
+                            likes:parseInt(likes)
                         }
                     }})     
-                    if(updatebio){
+                    if(updatepost){
                         console.log("post uploaded");
                     }
-            
+                
+
+                  if(commentedby!='' && comment!=''){
+                      const updatecomments= await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
+                        posts:{
+                            comments:{
+                                username:commentedby,
+                                commenttext:comment
+                            }
+                        }
+                       }})    
+
+                       if(updatecomments){
+                        console.log("comment added");
+                      } 
+                  }
+
+                  
+
                     res.status(200).json("post saved");
              
             }catch(err){
@@ -106,6 +126,27 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                 
             })
     
+            router.post('/deletepost',async (req,res)=>{
+                try{
+                      const {userid,imagename} = req.body;
+                      console.log(imagename);
+                       const updatebio = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$pull:{
+                            posts:{
+                                name:imagename
+                            }
+                        }})     
+                        if(updatebio){
+                            console.log("post deleted");
+                        }
+                
+                        res.status(200).json("post deleted");
+                 
+                }catch(err){
+                   // console.log(err);
+                    res.status(400).json(err);
+                }
+                    
+                })
 
 
 module.exports = router;

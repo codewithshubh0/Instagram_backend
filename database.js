@@ -38,6 +38,12 @@ const userProfileDetail = new mongoose.Schema(
            image:{
                 data:Buffer,
                 contentType:String
+           },
+           postcaption:String,
+           likes:Number,
+           comments:{
+               username:String,
+               commenttext:String
            }
         }
        ],
