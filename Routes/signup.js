@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {usermodel,userprofiledetailsmodel} = require("../database");
+const {usermodel,userprofiledetailsmodel,profileimagemodel} = require("../database");
 const bcrypt = require("bcrypt");
 
 router.post('/createuser',async (req,res)=>{
@@ -22,6 +22,9 @@ try{
                     const activitydetails = new userprofiledetailsmodel({userid:newuser._id,username:username});
                     activitydetails.save();
                 }
+
+                 const imagedata = new profileimagemodel({userid:newuser._id,username:username})
+                 await imagedata.save()
              res.status(200).json("1");
        }else{
         res.status(200).json("Username Already Exist");

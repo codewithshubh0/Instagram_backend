@@ -18,6 +18,7 @@ const usersdetails = new mongoose.Schema(
 const ProfileimageSchema = new mongoose.Schema(
     {
      userid:String,
+     username:String,
      name:String,
      image:{
         data:Buffer,
@@ -40,10 +41,10 @@ const userProfileDetail = new mongoose.Schema(
                 contentType:String
            },
            postcaption:String,
-           likes:Number,
+           likes:[String],
            comments:{
-               username:String,
-               commenttext:String
+               userid:String,
+               commenttext:String,
            }
         }
        ],

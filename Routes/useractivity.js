@@ -82,7 +82,7 @@ router.post('/saveunfollowactivity',async (req,res)=>{
 
         router.post('/savepost',upload.single("image"),async (req,res)=>{
             try{
-                  const {userid,caption,likes,commentedby,comment} = req.body;
+                  const {userid,caption} = req.body;
               
                    const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
                         posts:{
@@ -92,7 +92,6 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                                 contentType:req.file.mimetype
                             },
                             postcaption:caption,
-                            likes:parseInt(likes)
                         }
                     }})     
                     if(updatepost){
@@ -100,20 +99,20 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                     }
                 
 
-                  if(commentedby!='' && comment!=''){
-                      const updatecomments= await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
-                        posts:{
-                            comments:{
-                                username:commentedby,
-                                commenttext:comment
-                            }
-                        }
-                       }})    
+                //   if(commentedby!='' && comment!=''){
+                //       const updatecomments= await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
+                //         posts:{
+                //             comments:{
+                //                 username:commentedby,
+                //                 commenttext:comment
+                //             }
+                //         }
+                //        }})    
 
-                       if(updatecomments){
-                        console.log("comment added");
-                      } 
-                  }
+                //        if(updatecomments){
+                //         console.log("comment added");
+                //       } 
+                //   }
 
                   
 
@@ -130,12 +129,12 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                 try{
                       const {userid,imagename} = req.body;
                       console.log(imagename);
-                       const updatebio = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$pull:{
+                       const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$pull:{
                             posts:{
                                 name:imagename
                             }
                         }})     
-                        if(updatebio){
+                        if(updatepost){
                             console.log("post deleted");
                         }
                 
@@ -148,5 +147,67 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                     
                 })
 
+                router.post('/savelikes',async (req,res)=>{
+                    try{
+                          const {userid,imagename,like_userid} = req.body;
+                          console.log(imagename);
+                           const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid,'posts.name':imagename},{$push:{
+                               'posts.$.likes':like_userid
+                            }})     
+                            if(updatepost){
+                                console.log("likes added");
+                            }
+                    
+                            res.status(200).json("likes added");
+                     
+                    }catch(err){
+                       // console.log(err);
+                        res.status(400).json(err);
+                    }
+                        
+                    })
+
+                    router.post('/savedislikes',async (req,res)=>{
+                        try{
+                              const {userid,imagename,like_userid} = req.body;
+                              console.log(imagename);
+                               const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid,'posts.name':imagename},{$pull:{
+                                   'posts.$.likes':like_userid
+                                }})     
+                                if(updatepost){
+                                    console.log("disliked");
+                                }
+                        
+                                res.status(200).json("disliked");
+                         
+                        }catch(err){
+                           // console.log(err);
+                            res.status(400).json(err);
+                        }
+                            
+                        })
+    
+                router.post('/addcomment',async (req,res)=>{
+                    try{
+                             const {profileuserid,commentuserid,imagename,comment} = req.body;
+                            console.log(profileuserid,commentuserid,imagename,comment);
+                             const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:profileuserid,'posts.name':imagename},{$push:{
+                                'posts.$.comments':{
+                                    userid:commentuserid,
+                                    commenttext:comment,
+                                }
+                             }})     
+                            if(updatepost){
+                                  console.log("comment added");
+                             }
+                            
+                              res.status(200).json("comment added");
+                             
+                         }catch(err){
+                               // console.log(err);
+                                res.status(400).json(err);
+                            }
+                                
+                })
 
 module.exports = router;

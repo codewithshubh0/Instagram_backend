@@ -11,7 +11,7 @@ router.post("/storeimages",upload.single("image"),async(req,res)=>{
 
      const checkifexistimg =await profileimagemodel.findOne({userid:req.body.userid});
 
-    // console.log(req.file);
+     console.log(req.body.username+" username");
    try{
 
     if(checkifexistimg){
@@ -30,6 +30,7 @@ router.post("/storeimages",upload.single("image"),async(req,res)=>{
     }else{
         const imagemodel = new profileimagemodel({
           userid:req.body.userid,
+          username:req.body.username,
           name:req.file.originalname,
           image:{
               data:req.file.buffer,
@@ -51,7 +52,7 @@ router.get("/getimage/:userid",async(req,res)=>{
    try{
 
      const image =await profileimagemodel.findOne({userid:req.params.userid});
-      if(image){
+      if(image!=null && image.name!=null){
         res.status(200).json(image);
       }else{
         res.status(200).json("not found");
