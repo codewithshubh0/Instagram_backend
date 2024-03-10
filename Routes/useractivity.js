@@ -169,10 +169,10 @@ router.post('/saveunfollowactivity',async (req,res)=>{
 
                     router.post('/savedislikes',async (req,res)=>{
                         try{
-                              const {userid,imagename,like_userid} = req.body;
+                              const {userid,imagename,dislike_userid} = req.body;
                               console.log(imagename);
                                const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid,'posts.name':imagename},{$pull:{
-                                   'posts.$.likes':like_userid
+                                   'posts.$.likes':dislike_userid
                                 }})     
                                 if(updatepost){
                                     console.log("disliked");
