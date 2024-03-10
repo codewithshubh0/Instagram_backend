@@ -52,11 +52,10 @@ router.get("/getimage/:userid",async(req,res)=>{
    try{
 
      const image =await profileimagemodel.findOne({userid:req.params.userid});
-      if(image!=null && image.name!=null){
+       if(image){
         res.status(200).json(image);
-      }else{
-        res.status(200).json("not found");
-      }
+       }
+
     }catch(err){
       console.log(err);
       res.status(400).json(err);
