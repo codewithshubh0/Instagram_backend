@@ -83,7 +83,9 @@ router.post('/saveunfollowactivity',async (req,res)=>{
         router.post('/savepost',upload.single("image"),async (req,res)=>{
             try{
                   const {userid,caption} = req.body;
-              
+
+                  const checkifpresent = await userprofiledetailsmodel.findOne({userid:userid,'posts.name':req.file.originalname})
+                  if(checkifpresent==null){
                    const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
                         posts:{
                             name:req.file.originalname,
@@ -92,31 +94,17 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                                 contentType:req.file.mimetype
                             },
                             postcaption:caption,
+                            postdate:new Date()
                         }
                     }})     
                     if(updatepost){
                         console.log("post uploaded");
                     }
-                
-
-                //   if(commentedby!='' && comment!=''){
-                //       const updatecomments= await userprofiledetailsmodel.findOneAndUpdate({userid:userid},{$push:{
-                //         posts:{
-                //             comments:{
-                //                 username:commentedby,
-                //                 commenttext:comment
-                //             }
-                //         }
-                //        }})    
-
-                //        if(updatecomments){
-                //         console.log("comment added");
-                //       } 
-                //   }
-
-                  
-
-                    res.status(200).json("post saved");
+                    res.status(200).json("Successfully posted");
+                }else{
+                    res.status(200).json("Same Image already Posted");
+                }
+                   
              
             }catch(err){
                // console.log(err);

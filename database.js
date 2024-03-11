@@ -45,7 +45,8 @@ const userProfileDetail = new mongoose.Schema(
            comments:{
                userid:String,
                commenttext:String,
-           }
+           },
+           postdate:String
         }
        ],
      bio:String
