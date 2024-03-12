@@ -6,6 +6,7 @@ router.get('/getallusers/:userid',async (req,res)=>{
     
     try{
        const users = await usermodel.find({_id:{$ne:req.params.userid}});
+       console.log(users+" users");
        res.status(200).json(users);
     }catch(err){
         res.status(400).json(err);

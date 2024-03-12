@@ -82,7 +82,7 @@ router.post('/saveunfollowactivity',async (req,res)=>{
 
         router.post('/savepost',upload.single("image"),async (req,res)=>{
             try{
-                  const {userid,caption} = req.body;
+                  const {userid,caption,postdate} = req.body;
 
                   const checkifpresent = await userprofiledetailsmodel.findOne({userid:userid,'posts.name':req.file.originalname})
                   if(checkifpresent==null){
@@ -94,7 +94,7 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                                 contentType:req.file.mimetype
                             },
                             postcaption:caption,
-                            postdate:new Date()
+                            postdate:postdate
                         }
                     }})     
                     if(updatepost){
@@ -190,6 +190,29 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                              }
                             
                               res.status(200).json("comment added");
+                             
+                         }catch(err){
+                               // console.log(err);
+                                res.status(400).json(err);
+                            }
+                                
+                })
+
+                router.post('/deletecomment',async (req,res)=>{
+                    try{
+                             const {profileuserid,commentuserid,imagename,comment} = req.body;
+                            console.log(profileuserid,commentuserid,imagename,comment);
+                             const updatepost = await userprofiledetailsmodel.findOneAndUpdate({userid:profileuserid,'posts.name':imagename},{$pull:{
+                                'posts.$.comments':{
+                                    userid:commentuserid,
+                                    commenttext:comment,
+                                }
+                             }})     
+                            if(updatepost){
+                                  console.log("comment deleted");
+                             }
+                            
+                              res.status(200).json("comment deleted");
                              
                          }catch(err){
                                // console.log(err);
