@@ -15,9 +15,9 @@ router.get('/getuserpost/:page',async (req,res)=>{
     try{
         const page = req.params.page;
         console.log(page+" page size");
-        const dataperpage = 1;
+        const dataperpage = 2;
     //    const users = await userprofiledetailsmodel.find({}).skip(page*dataperpage).limit(dataperpage);
-    const users = await userprofiledetailsmodel.find({}).sort({'posts.postdate':-1}).skip(page*dataperpage).limit(dataperpage);
+    const users = await allpostsmodel.find({}).sort({'postdate':-1}).skip(page*dataperpage).limit(dataperpage);
        //console.log(users.length+" length");
        var ar = [];
     //    users.map(e=>{
@@ -30,22 +30,22 @@ router.get('/getuserpost/:page',async (req,res)=>{
     }    
 })
 
-// router.get('/gettotalpostcount',async (req,res)=>{
+router.get('/gettotalpostcount',async (req,res)=>{
     
-//     try{
+    try{
        
-//     const users = await userprofiledetailsmodel.find({});
-//       // console.log(users.length+" length");
-//        var ar = [];
-//     //    users.map(e=>{
-//     //       ar.push(e.username);
-//     //    })
-//       // res.status(200).json(users[0].username);
-//       res.status(200).json(users.length);
-//     }catch(err){
-//         res.status(400).json(err);
-//     }    
-// })
+    const users = await allpostsmodel.find({});
+      // console.log(users.length+" length");
+       var ar = [];
+    //    users.map(e=>{
+    //       ar.push(e.username);
+    //    })
+      // res.status(200).json(users[0].username);
+      res.status(200).json(users.length);
+    }catch(err){
+        res.status(400).json(err);
+    }    
+})
 
 
 router.post('/savefollowactivity',async (req,res)=>{
@@ -206,7 +206,13 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                             if(updatepost){
                                 console.log("likes added");
                             }
-                    
+
+                            const updatepostinpostdata = await allpostsmodel.findOneAndUpdate({userid:userid,postname:imagename},{$push:{
+                                'likes':like_userid
+                             }})     
+                             if(updatepostinpostdata){
+                                 console.log("likes added for postdata");
+                             }
                             res.status(200).json("likes added");
                      
                     }catch(err){
@@ -227,6 +233,13 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                                     console.log("disliked");
                                 }
                         
+
+                                const updatepostinpostdata = await userprofiledetailsmodel.findOneAndUpdate({userid:userid,'postname':imagename},{$pull:{
+                                    'likes':dislike_userid
+                                 }})     
+                                 if(updatepostinpostdata){
+                                     console.log("disliked in postdata");
+                                 }
                                 res.status(200).json("disliked");
                          
                         }catch(err){
