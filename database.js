@@ -49,12 +49,32 @@ const userProfileDetail = new mongoose.Schema(
            postdate:String
         }
        ],
-     bio:String
+       bio:String
+    },{timestamps:true}
+)
+
+const allpostData = new mongoose.Schema(
+    {
+     userid:String,
+     username:String,
+     postname:String,
+     image:{
+         data:Buffer,
+         contentType:String
+     },
+    postcaption:String,
+    likes:[String],
+    postdate:String,
+    postcomments:[{
+        userid:String,
+        commenttext:String,
+    }],
     },{timestamps:true}
 )
 
 const usermodel = new mongoose.model("userdetails",usersdetails);
 const profileimagemodel = new mongoose.model("profilepics",ProfileimageSchema);
 const userprofiledetailsmodel = new mongoose.model("userprofiledetails",userProfileDetail);
+const allpostsmodel = new mongoose.model("postDatas",allpostData);
 
-module.exports = {usermodel,profileimagemodel,userprofiledetailsmodel}
+module.exports = {usermodel,profileimagemodel,userprofiledetailsmodel,allpostsmodel}

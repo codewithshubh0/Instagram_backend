@@ -1,9 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const {userprofiledetailsmodel} = require("../database");
+const {userprofiledetailsmodel,allpostsmodel} = require("../database");
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({storage:storage});
+
+
+
+
+
+
+router.get('/getuserpost/:page',async (req,res)=>{
+    
+    try{
+        const page = req.params.page;
+        console.log(page+" page size");
+        const dataperpage = 1;
+    //    const users = await userprofiledetailsmodel.find({}).skip(page*dataperpage).limit(dataperpage);
+    const users = await userprofiledetailsmodel.find({}).sort({'posts.postdate':-1}).skip(page*dataperpage).limit(dataperpage);
+       //console.log(users.length+" length");
+       var ar = [];
+    //    users.map(e=>{
+    //       ar.push(e.username);
+    //    })
+      // res.status(200).json(users[0].username);
+      res.status(200).json(users);
+    }catch(err){
+        res.status(400).json(err);
+    }    
+})
+
+// router.get('/gettotalpostcount',async (req,res)=>{
+    
+//     try{
+       
+//     const users = await userprofiledetailsmodel.find({});
+//       // console.log(users.length+" length");
+//        var ar = [];
+//     //    users.map(e=>{
+//     //       ar.push(e.username);
+//     //    })
+//       // res.status(200).json(users[0].username);
+//       res.status(200).json(users.length);
+//     }catch(err){
+//         res.status(400).json(err);
+//     }    
+// })
+
 
 router.post('/savefollowactivity',async (req,res)=>{
 try{
@@ -82,7 +125,9 @@ router.post('/saveunfollowactivity',async (req,res)=>{
 
         router.post('/savepost',upload.single("image"),async (req,res)=>{
             try{
-                  const {userid,caption,postdate} = req.body;
+                  const {userid,caption,postdate,username} = req.body;
+
+            
 
                   const checkifpresent = await userprofiledetailsmodel.findOne({userid:userid,'posts.name':req.file.originalname})
                   if(checkifpresent==null){
@@ -100,6 +145,22 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                     if(updatepost){
                         console.log("post uploaded");
                     }
+
+                    const newpost = new allpostsmodel({
+                        userid:userid,
+                        username:username,
+
+                        postname:req.file.originalname,
+                        image:{
+                            data:req.file.buffer,
+                            contentType:req.file.mimetype
+                        },
+                        postcaption:caption,
+                        postdate:postdate
+                    })
+
+                    await newpost.save();
+                    
                     res.status(200).json("Successfully posted");
                 }else{
                     res.status(200).json("Same Image already Posted");
@@ -187,6 +248,16 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                              }})     
                             if(updatepost){
                                   console.log("comment added");
+                             }
+
+                             const updatePostinPostData = await allpostsmodel.findOneAndUpdate({userid:profileuserid,'postname':imagename},{$push:{
+                                'postcomments':{
+                                    userid:commentuserid,
+                                    commenttext:comment,
+                                }
+                             }})     
+                             if(updatePostinPostData){
+                                console.log("update in post");
                              }
                             
                               res.status(200).json("comment added");

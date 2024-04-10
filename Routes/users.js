@@ -23,6 +23,16 @@ router.get('/getuserdetail/:userid',async (req,res)=>{
     }    
 })
 
+router.get('/getuserdetail',async (req,res)=>{
+    
+    try{
+       const users = await userprofiledetailsmodel.find({userid:req.params.userid});
+       res.status(200).json(users);
+    }catch(err){
+        res.status(400).json(err);
+    }    
+})
+
 router.get('/getalluserdetail',async (req,res)=>{
     
     try{
@@ -33,5 +43,7 @@ router.get('/getalluserdetail',async (req,res)=>{
         res.status(400).json(err);
     }    
 })
+
+
 
 module.exports = router;
