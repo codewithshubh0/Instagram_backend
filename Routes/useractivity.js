@@ -15,9 +15,9 @@ router.get('/getuserpost/:page',async (req,res)=>{
     try{
         const page = req.params.page;
         console.log(page+" page size");
-        const dataperpage = 2;
+        const dataperpage = 1;
     //    const users = await userprofiledetailsmodel.find({}).skip(page*dataperpage).limit(dataperpage);
-    const users = await allpostsmodel.find({}).sort({'postdate':-1}).skip(page*dataperpage).limit(dataperpage);
+    const users = await allpostsmodel.find({}).sort({'createdAt':-1}).skip(page*dataperpage).limit(dataperpage);
        //console.log(users.length+" length");
        var ar = [];
     //    users.map(e=>{
