@@ -296,6 +296,17 @@ router.post('/saveunfollowactivity',async (req,res)=>{
                                   console.log("comment deleted");
                              }
                             
+
+                             const updatepostforpostdata = await allpostsmodel.findOneAndUpdate({userid:profileuserid,'postname':imagename},{$pull:{
+                                'postcomments':{
+                                    userid:commentuserid,
+                                    commenttext:comment,
+                                }
+                             }})     
+                            if(updatepostforpostdata){
+                                  console.log("comment deleted in postdata");
+                             }
+                            
                               res.status(200).json("comment deleted");
                              
                          }catch(err){
